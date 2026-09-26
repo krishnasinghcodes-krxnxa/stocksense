@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockSense — Smart Inventory Management</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark">S</div>
+            <div>
+                <h2>Stock<span>Sense</span></h2>
+                <small>Inventory Intelligence</small>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="workspace-icon">W</div>
+            <div>
+                <strong>Main Warehouse</strong>
+                <span>Jalandhar • India</span>
+            </div>
+            <button class="workspace-arrow">⌄</button>
+        </div>
+
+        <div class="nav-section">
+            <p>OVERVIEW</p>
+
+            <button class="nav-item active" data-page="dashboard">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </button>
+
+            <button class="nav-item" data-page="products">
+                <span class="nav-icon">▦</span>
+                <span>Products</span>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <p>OPERATIONS</p>
+
+            <button class="nav-item" data-page="receipts">
+                <span class="nav-icon">↓</span>
+                <span>Receipts</span>
+                <span class="nav-count green">12</span>
+            </button>
+
+            <button class="nav-item" data-page="deliveries">
+                <span class="nav-icon">↑</span>
+                <span>Delivery Orders</span>
+                <span class="nav-count orange">7</span>
+            </button>
+
+            <button class="nav-item" data-page="transfers">
+                <span class="nav-icon">⇄</span>
+                <span>Internal Transfers</span>
+                <span class="nav-count blue">4</span>
+            </button>
+
+            <button class="nav-item" data-page="adjustments">
+                <span class="nav-icon">±</span>
+                <span>Adjustments</span>
+            </button>
+
+            <button class="nav-item" data-page="ledger">
+                <span class="nav-icon">☷</span>
+                <span>Stock Ledger</span>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <p>MANAGEMENT</p>
+
+            <button class="nav-item" data-page="settings">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </button>
+
+            <button class="nav-item" data-page="profile">
+                <span class="nav-icon">◉</span>
+                <span>My Profile</span>
+            </button>
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="help-card">
+                <div class="help-icon">?</div>
+                <div>
+                    <strong>Need help?</strong>
+                    <span>View documentation</span>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="alert('Logout will be connected to authentication later.')">
+                <span>↪</span>
+                Logout
+            </button>
+
+            <div class="user-mini">
+                <div class="avatar">KS</div>
+                <div>
+                    <strong>Krishna Singh</strong>
+                    <span>Inventory Manager</span>
+                </div>
+                <span class="online-dot"></span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="page-heading">
+                <div class="breadcrumb">
+                    Workspace <span>/</span> Inventory
+                </div>
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">Inventory overview and operations</p>
+            </div>
+
+            <div class="topbar-actions">
+
+                <div class="global-search">
+                    <span>⌕</span>
+                    <input type="text" placeholder="Search products, SKU, orders...">
+                    <kbd>⌘ K</kbd>
+                </div>
+
+                <button class="icon-btn notification-btn">
+                    ♢
+                    <span></span>
+                </button>
+
+                <div class="top-user">
+                    <div class="avatar">KS</div>
+                    <div>
+                        <strong>Krishna</strong>
+                        <small>Manager</small>
+                    </div>
+                    <span>⌄</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <div class="content-area">
+
+
+            <!-- ================= DASHBOARD ================= -->
+
+            <section class="page active" id="page-dashboard">
+
+                <div class="welcome-row">
+                    <div>
+                        <div class="eyebrow">SATURDAY, 26 SEPTEMBER 2026</div>
+                        <h2>Good morning, Krishna <span>✦</span></h2>
+                        <p>Here's what's happening with your inventory today.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openProductModal()">
+                        <span>＋</span> Add Product
+                    </button>
+                </div>
+
+
+                <!-- KPI CARDS -->
+
+                <div class="stats-grid">
+
+                    <div class="stat-card purple">
+                        <div class="stat-top">
+                            <div class="stat-icon">▦</div>
+                            <span class="trend positive">↗ 12.4%</span>
+                        </div>
+                        <span class="stat-label">Total Products</span>
+                        <strong id="totalProducts">4</strong>
+                        <small>Across all warehouses</small>
+                    </div>
+
+                    <div class="stat-card orange">
+                        <div class="stat-top">
+                            <div class="stat-icon">!</div>
+                            <span class="trend negative">Needs attention</span>
+                        </div>
+                        <span class="stat-label">Low Stock</span>
+                        <strong id="lowStock">1</strong>
+                        <small>Products below reorder level</small>
+                    </div>
+
+                    <div class="stat-card red">
+                        <div class="stat-top">
+                            <div class="stat-icon">×</div>
+                            <span class="trend negative">Action required</span>
+                        </div>
+                        <span class="stat-label">Out of Stock</span>
+                        <strong id="outStock">1</strong>
+                        <small>Products unavailable</small>
+                    </div>
+
+                    <div class="stat-card green">
+                        <div class="stat-top">
+                            <div class="stat-icon">↓</div>
+                            <span class="trend positive">↗ 8.2%</span>
+                        </div>
+                        <span class="stat-label">Pending Receipts</span>
+                        <strong>12</strong>
+                        <small>Incoming shipments</small>
+                    </div>
+
+                    <div class="stat-card blue">
+                        <div class="stat-top">
+                            <div class="stat-icon">↑</div>
+                            <span class="trend neutral">7 orders</span>
+                        </div>
+                        <span class="stat-label">Pending Deliveries</span>
+                        <strong>7</strong>
+                        <small>Waiting for dispatch</small>
+                    </div>
+
+                    <div class="stat-card cyan">
+                        <div class="stat-top">
+                            <div class="stat-icon">⇄</div>
+                            <span class="trend neutral">4 scheduled</span>
+                        </div>
+                        <span class="stat-label">Internal Transfers</span>
+                        <strong>4</strong>
+                        <small>Movement requests</small>
+                    </div>
+
+                </div>
+
+
+                <!-- FILTERS -->
+
+                <div class="filter-bar">
+
+                    <div class="filter-title">
+                        <span>☷</span>
+                        Smart Filters
+                    </div>
+
+                    <select>
+                        <option>All document types</option>
+                        <option>Receipts</option>
+                        <option>Delivery</option>
+                        <option>Internal</option>
+                        <option>Adjustments</option>
+                    </select>
+
+                    <select>
+                        <option>All statuses</option>
+                        <option>Draft</option>
+                        <option>Waiting</option>
+                        <option>Ready</option>
+                        <option>Done</option>
+                        <option>Canceled</option>
+                    </select>
+
+                    <select>
+                        <option>All warehouses</option>
+                        <option>Main Warehouse</option>
+                        <option>Warehouse 1</option>
+                        <option>Production Floor</option>
+                    </select>
+
+                    <select>
+                        <option>All categories</option>
+                        <option>Raw Material</option>
+                        <option>Furniture</option>
+                        <option>Electrical</option>
+                    </select>
+
+                    <button class="filter-reset">Reset</button>
+
+                </div>
+
+
+                <div class="dashboard-grid">
+
+                    <!-- INVENTORY TABLE -->
+
+                    <div class="panel large-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Inventory Overview</h3>
+                                <p>Current stock across locations</p>
+                            </div>
+
+                            <button class="ghost-btn" onclick="showPage('products')">
+                                View all →
+                            </button>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>PRODUCT</th>
+                                        <th>CATEGORY</th>
+                                        <th>STOCK</th>
+                                        <th>LOCATION</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="dashboardProducts"></tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                    <!-- STOCK HEALTH -->
+
+                    <div class="panel health-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Stock Health</h3>
+                                <p>Overall inventory condition</p>
+                            </div>
+                        </div>
+
+                        <div class="health-ring">
+                            <div>
+                                <strong>82%</strong>
+                                <span>Healthy</span>
+                            </div>
+                        </div>
+
+                        <div class="health-list">
+
+                            <div>
+                                <span><i class="dot green-dot"></i>Healthy Stock</span>
+                                <strong>82%</strong>
+                            </div>
+
+                            <div>
+                                <span><i class="dot orange-dot"></i>Low Stock</span>
+                                <strong>13%</strong>
+                            </div>
+
+                            <div>
+                                <span><i class="dot red-dot"></i>Out of Stock</span>
+                                <strong>5%</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVITY + ALERTS -->
+
+                <div class="dashboard-grid bottom-grid">
+
+                    <div class="panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Recent Operations</h3>
+                                <p>Latest inventory movements</p>
+                            </div>
+
+                            <button class="ghost-btn" onclick="showPage('ledger')">
+                                View ledger →
+                            </button>
+                        </div>
+
+                        <div class="activity-list">
+
+                            <div class="activity">
+                                <div class="activity-icon receipt">↓</div>
+                                <div>
+                                    <strong>Steel Rods received</strong>
+                                    <span>50 kg • Main Warehouse</span>
+                                </div>
+                                <time>12 min ago</time>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-icon delivery">↑</div>
+                                <div>
+                                    <strong>Office Chairs delivered</strong>
+                                    <span>10 units • Warehouse 1</span>
+                                </div>
+                                <time>38 min ago</time>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-icon transfer">⇄</div>
+                                <div>
+                                    <strong>Internal transfer scheduled</strong>
+                                    <span>Main → Production Floor</span>
+                                </div>
+                                <time>1 hr ago</time>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-icon adjustment">±</div>
+                                <div>
+                                    <strong>Copper Wire adjusted</strong>
+                                    <span>-3 kg • Rack B</span>
+                                </div>
+                                <time>2 hrs ago</time>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel alerts-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Low Stock Alerts</h3>
+                                <p>Products requiring attention</p>
+                            </div>
+
+                            <span class="alert-badge">2 alerts</span>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-product">CW</div>
+                            <div class="alert-info">
+                                <strong>Copper Wire</strong>
+                                <span>18 kg remaining</span>
+                                <div class="progress">
+                                    <i style="width:22%"></i>
+                                </div>
+                            </div>
+                            <button>Reorder</button>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-product red-bg">SP</div>
+                            <div class="alert-info">
+                                <strong>Steel Plates</strong>
+                                <span>0 kg remaining</span>
+                                <div class="progress">
+                                    <i style="width:3%"></i>
+                                </div>
+                            </div>
+                            <button>Reorder</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= PRODUCTS ================= -->
+
+            <section class="page" id="page-products">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">INVENTORY CATALOG</div>
+                        <h2>Products</h2>
+                        <p>Create, update and monitor product stock.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openProductModal()">
+                        ＋ New Product
+                    </button>
+                </div>
+
+                <div class="toolbar">
+
+                    <div class="search-input">
+                        <span>⌕</span>
+                        <input id="productSearch" placeholder="Search by product name or SKU...">
+                    </div>
+
+                    <select>
+                        <option>All Categories</option>
+                        <option>Raw Material</option>
+                        <option>Furniture</option>
+                        <option>Electrical</option>
+                    </select>
+
+                    <select>
+                        <option>All Locations</option>
+                        <option>Main Warehouse</option>
+                        <option>Warehouse 1</option>
+                        <option>Production Floor</option>
+                    </select>
+
+                    <button class="ghost-btn">Export</button>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Product Catalog</h3>
+                            <p>Stock availability by location</p>
+                        </div>
+
+                        <span class="table-count">4 products</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>PRODUCT</th>
+                                    <th>CATEGORY</th>
+                                    <th>AVAILABLE STOCK</th>
+                                    <th>LOCATION</th>
+                                    <th>STATUS</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="productsTable"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="info-cards">
+
+                    <div class="info-card">
+                        <div class="info-icon purple-bg">↻</div>
+                        <div>
+                            <span>Reordering Rules</span>
+                            <strong>Configure minimum stock levels</strong>
+                        </div>
+                        <button>→</button>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon blue-bg">⌂</div>
+                        <div>
+                            <span>Stock by Location</span>
+                            <strong>View warehouse distribution</strong>
+                        </div>
+                        <button>→</button>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon green-bg">▦</div>
+                        <div>
+                            <span>Categories</span>
+                            <strong>Manage product categories</strong>
+                        </div>
+                        <button>→</button>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= RECEIPTS ================= -->
+
+            <section class="page" id="page-receipts">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">INCOMING INVENTORY</div>
+                        <h2>Receipts</h2>
+                        <p>Track goods arriving from vendors.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openModal('Create Receipt', receiptForm())">
+                        ＋ New Receipt
+                    </button>
+                </div>
+
+                <div class="operation-flow">
+
+                    <div class="flow-step active">
+                        <span>01</span>
+                        <strong>Create</strong>
+                        <small>Add supplier & products</small>
+                    </div>
+
+                    <div class="flow-line"></div>
+
+                    <div class="flow-step">
+                        <span>02</span>
+                        <strong>Receive</strong>
+                        <small>Enter quantities</small>
+                    </div>
+
+                    <div class="flow-line"></div>
+
+                    <div class="flow-step">
+                        <span>03</span>
+                        <strong>Validate</strong>
+                        <small>Increase stock</small>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Incoming Receipts</h3>
+                            <p>Supplier deliveries waiting to be processed</p>
+                        </div>
+                        <span class="table-count">12 pending</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>SUPPLIER</th>
+                                    <th>PRODUCTS</th>
+                                    <th>QUANTITY</th>
+                                    <th>STATUS</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="operationsTable"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= DELIVERIES ================= -->
+
+            <section class="page" id="page-deliveries">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">OUTGOING INVENTORY</div>
+                        <h2>Delivery Orders</h2>
+                        <p>Pick, pack and validate outgoing stock.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openModal('Create Delivery Order', deliveryForm())">
+                        ＋ New Delivery
+                    </button>
+                </div>
+
+                <div class="operation-flow delivery-flow">
+
+                    <div class="flow-step active">
+                        <span>01</span>
+                        <strong>Pick</strong>
+                        <small>Select inventory</small>
+                    </div>
+
+                    <div class="flow-line"></div>
+
+                    <div class="flow-step">
+                        <span>02</span>
+                        <strong>Pack</strong>
+                        <small>Prepare shipment</small>
+                    </div>
+
+                    <div class="flow-line"></div>
+
+                    <div class="flow-step">
+                        <span>03</span>
+                        <strong>Validate</strong>
+                        <small>Decrease stock</small>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Delivery Orders</h3>
+                            <p>Customer shipments and outgoing goods</p>
+                        </div>
+                        <span class="table-count">7 pending</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>PRODUCT</th>
+                                    <th>QUANTITY</th>
+                                    <th>LOCATION</th>
+                                    <th>STATUS</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="operationsTable"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= TRANSFERS ================= -->
+
+            <section class="page" id="page-transfers">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">INTERNAL MOVEMENT</div>
+                        <h2>Internal Transfers</h2>
+                        <p>Move stock between warehouses and locations.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openModal('Create Internal Transfer', transferForm())">
+                        ＋ New Transfer
+                    </button>
+                </div>
+
+                <div class="transfer-visual">
+
+                    <div class="location-card">
+                        <span>SOURCE</span>
+                        <strong>Main Warehouse</strong>
+                        <small>Jalandhar • Rack A</small>
+                    </div>
+
+                    <div class="transfer-arrow">
+                        ⇢
+                    </div>
+
+                    <div class="location-card destination">
+                        <span>DESTINATION</span>
+                        <strong>Production Floor</strong>
+                        <small>Manufacturing • Rack B</small>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Transfer History</h3>
+                            <p>Every internal movement is logged</p>
+                        </div>
+                        <span class="table-count">4 scheduled</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>PRODUCT</th>
+                                    <th>QUANTITY</th>
+                                    <th>ROUTE</th>
+                                    <th>STATUS</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="operationsTable"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ADJUSTMENTS ================= -->
+
+            <section class="page" id="page-adjustments">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">STOCK CORRECTION</div>
+                        <h2>Inventory Adjustments</h2>
+                        <p>Fix differences between recorded and physical stock.</p>
+                    </div>
+
+                    <button class="primary-btn" onclick="openModal('New Stock Adjustment', adjustmentForm())">
+                        ＋ New Adjustment
+                    </button>
+                </div>
+
+                <div class="adjustment-card">
+
+                    <div class="adjustment-visual">
+                        <div class="adjustment-number">01</div>
+                        <div>
+                            <span>RECORDED STOCK</span>
+                            <strong>21 kg</strong>
+                        </div>
+                    </div>
+
+                    <div class="adjustment-symbol">→</div>
+
+                    <div class="adjustment-visual">
+                        <div class="adjustment-number physical">02</div>
+                        <div>
+                            <span>PHYSICAL COUNT</span>
+                            <strong>18 kg</strong>
+                        </div>
+                    </div>
+
+                    <div class="adjustment-result">
+                        <span>DIFFERENCE</span>
+                        <strong>-3 kg</strong>
+                        <small>Damaged items</small>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Adjustment History</h3>
+                            <p>Stock corrections and physical counts</p>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>PRODUCT</th>
+                                    <th>LOCATION</th>
+                                    <th>RECORDED</th>
+                                    <th>COUNTED</th>
+                                    <th>DIFFERENCE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td><strong>ADJ-0192</strong></td>
+                                    <td>Copper Wire</td>
+                                    <td>Rack B</td>
+                                    <td>21 kg</td>
+                                    <td>18 kg</td>
+                                    <td class="negative-text">-3 kg</td>
+                                    <td><span class="status done">Done</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>ADJ-0191</strong></td>
+                                    <td>Office Chairs</td>
+                                    <td>Warehouse 1</td>
+                                    <td>90</td>
+                                    <td>86</td>
+                                    <td class="negative-text">-4</td>
+                                    <td><span class="status done">Done</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= LEDGER ================= -->
+
+            <section class="page" id="page-ledger">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">AUDIT TRAIL</div>
+                        <h2>Stock Ledger</h2>
+                        <p>Complete history of every inventory movement.</p>
+                    </div>
+
+                    <button class="ghost-btn">Export Ledger ↓</button>
+                </div>
+
+                <div class="ledger-summary">
+
+                    <div>
+                        <span>Total Movements</span>
+                        <strong>248</strong>
+                    </div>
+
+                    <div>
+                        <span>Stock In</span>
+                        <strong class="positive-text">+1,842 kg</strong>
+                    </div>
+
+                    <div>
+                        <span>Stock Out</span>
+                        <strong class="negative-text">-927 kg</strong>
+                    </div>
+
+                    <div>
+                        <span>Adjustments</span>
+                        <strong>-38 kg</strong>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Movement History</h3>
+                            <p>Receipts, deliveries, transfers and adjustments</p>
+                        </div>
+
+                        <div class="ledger-filters">
+                            <select>
+                                <option>All Types</option>
+                                <option>Receipt</option>
+                                <option>Delivery</option>
+                                <option>Internal</option>
+                                <option>Adjustment</option>
+                            </select>
+
+                            <select>
+                                <option>Last 30 days</option>
+                                <option>Last 7 days</option>
+                                <option>Today</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REFERENCE</th>
+                                    <th>TYPE</th>
+                                    <th>PRODUCT</th>
+                                    <th>QUANTITY</th>
+                                    <th>LOCATION</th>
+                                    <th>DATE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="ledgerTable"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= SETTINGS ================= -->
+
+            <section class="page" id="page-settings">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">CONFIGURATION</div>
+                        <h2>Settings</h2>
+                        <p>Configure warehouses and inventory preferences.</p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+
+                    <div class="settings-nav">
+
+                        <button class="settings-tab active">
+                            🏭 Warehouses
+                        </button>
+
+                        <button class="settings-tab">
+                            ▦ Categories
+                        </button>
+
+                        <button class="settings-tab">
+                            ↻ Reordering Rules
+                        </button>
+
+                        <button class="settings-tab">
+                            🔔 Notifications
+                        </button>
+
+                    </div>
+
+                    <div class="panel settings-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Warehouses</h3>
+                                <p>Manage your storage locations</p>
+                            </div>
+
+                            <button class="primary-btn">＋ Add Warehouse</button>
+                        </div>
+
+                        <div class="warehouse-list">
+
+                            <div class="warehouse">
+                                <div class="warehouse-icon">W1</div>
+                                <div>
+                                    <strong>Main Warehouse</strong>
+                                    <span>Jalandhar • 8 locations</span>
+                                </div>
+                                <span class="active-badge">Active</span>
+                                <button>⋮</button>
+                            </div>
+
+                            <div class="warehouse">
+                                <div class="warehouse-icon">W2</div>
+                                <div>
+                                    <strong>Warehouse 1</strong>
+                                    <span>Jalandhar • 5 locations</span>
+                                </div>
+                                <span class="active-badge">Active</span>
+                                <button>⋮</button>
+                            </div>
+
+                            <div class="warehouse">
+                                <div class="warehouse-icon">PF</div>
+                                <div>
+                                    <strong>Production Floor</strong>
+                                    <span>Manufacturing • 4 locations</span>
+                                </div>
+                                <span class="active-badge">Active</span>
+                                <button>⋮</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= PROFILE ================= -->
+
+            <section class="page" id="page-profile">
+
+                <div class="page-actions">
+                    <div>
+                        <div class="eyebrow">ACCOUNT</div>
+                        <h2>My Profile</h2>
+                        <p>Manage your StockSense account.</p>
+                    </div>
+                </div>
+
+                <div class="profile-grid">
+
+                    <div class="panel profile-card">
+
+                        <div class="profile-cover"></div>
+
+                        <div class="profile-avatar">KS</div>
+
+                        <h3>Krishna Singh</h3>
+                        <p>Inventory Manager</p>
+
+                        <span class="active-badge">● Active</span>
+
+                        <div class="profile-stats">
+                            <div>
+                                <strong>4</strong>
+                                <span>Warehouses</span>
+                            </div>
+
+                            <div>
+                                <strong>248</strong>
+                                <span>Movements</span>
+                            </div>
+
+                            <div>
+                                <strong>26</strong>
+                                <span>Products</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="panel profile-form">
+
+                        <div class="panel-header">
+                            <div>
+                                <h3>Personal Information</h3>
+                                <p>Update your profile details</p>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div>
+                                <label>Full Name</label>
+                                <input value="Krishna Singh">
+                            </div>
+
+                            <div>
+                                <label>Email Address</label>
+                                <input value="krishna@example.com">
+                            </div>
+
+                            <div>
+                                <label>Role</label>
+                                <input value="Inventory Manager" disabled>
+                            </div>
+
+                            <div>
+                                <label>Phone</label>
+                                <input placeholder="+91 XXXXX XXXXX">
+                            </div>
+
+                        </div>
+
+                        <button class="primary-btn">Save Changes</button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <div class="eyebrow">STOCKSENSE</div>
+                <h3 id="modalTitle">Create</h3>
+            </div>
+
+            <button class="modal-close" data-close-modal>×</button>
+        </div>
+
+        <div id="modalBody"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function receiptForm() {
+    return `
+        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Receipt created successfully!')">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Supplier</label>
+                    <input required placeholder="Supplier name">
+                </div>
+
+                <div>
+                    <label>Product</label>
+                    <select>
+                        <option>Steel Rods</option>
+                        <option>Copper Wire</option>
+                        <option>Steel Plates</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Quantity Received</label>
+                    <input type="number" min="1" required placeholder="50">
+                </div>
+
+                <div>
+                    <label>Destination</label>
+                    <select>
+                        <option>Main Warehouse</option>
+                        <option>Warehouse 1</option>
+                        <option>Production Floor</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button class="primary-btn full-btn" type="submit">
+                Create Receipt
+            </button>
+
+        </form>
+    `;
+}
+
+
+function deliveryForm() {
+    return `
+        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Delivery order created successfully!')">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Customer / Reference</label>
+                    <input required placeholder="Customer name">
+                </div>
+
+                <div>
+                    <label>Product</label>
+                    <select>
+                        <option>Office Chairs</option>
+                        <option>Steel Rods</option>
+                        <option>Copper Wire</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Quantity</label>
+                    <input type="number" min="1" required placeholder="10">
+                </div>
+
+                <div>
+                    <label>Source Location</label>
+                    <select>
+                        <option>Warehouse 1</option>
+                        <option>Main Warehouse</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button class="primary-btn full-btn" type="submit">
+                Create Delivery
+            </button>
+
+        </form>
+    `;
+}
+
+
+function transferForm() {
+    return `
+        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Transfer created successfully!')">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Product</label>
+                    <select>
+                        <option>Steel Rods</option>
+                        <option>Copper Wire</option>
+                        <option>Steel Plates</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Quantity</label>
+                    <input type="number" min="1" required placeholder="120">
+                </div>
+
+                <div>
+                    <label>From Location</label>
+                    <select>
+                        <option>Main Warehouse</option>
+                        <option>Warehouse 1</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>To Location</label>
+                    <select>
+                        <option>Production Floor</option>
+                        <option>Rack B</option>
+                        <option>Warehouse 2</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button class="primary-btn full-btn" type="submit">
+                Schedule Transfer
+            </button>
+
+        </form>
+    `;
+}
+
+
+function adjustmentForm() {
+    return `
+        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Stock adjustment recorded successfully!')">
+
+            <div class="form-grid">
+
+                <div>
+                    <label>Product</label>
+                    <select>
+                        <option>Copper Wire</option>
+                        <option>Steel Rods</option>
+                        <option>Office Chairs</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Location</label>
+                    <select>
+                        <option>Rack B</option>
+                        <option>Main Warehouse</option>
+                        <option>Warehouse 1</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Recorded Quantity</label>
+                    <input value="21" type="number">
+                </div>
+
+                <div>
+                    <label>Physical Count</label>
+                    <input value="18" type="number">
+                </div>
+
+            </div>
+
+            <div class="adjustment-note">
+                The system will calculate the difference and update stock after validation.
+            </div>
+
+            <button class="primary-btn full-btn" type="submit">
+                Validate Adjustment
+            </button>
+
+        </form>
+    `;
+}
+
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
