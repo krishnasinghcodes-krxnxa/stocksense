@@ -1,3 +1,5 @@
+const API_URL = "http://127.0.0.1:5000/api";
+
 const state = {
   currentPage: "dashboard",
   products: [
@@ -51,14 +53,117 @@ function showPage(page) {
   renderPage(page);
 }
 
+async function loadProducts() {
+  try {
+    const response = await fetch(`${API_URL}/products`);
+    const data = await response.json();
+
+    if (response.ok && data.products) {
+      state.products = data.products;
+      renderDashboard();
+      renderProducts();
+      updateStats();
+    }
+  } catch (error) {
+    console.error("Failed to load products:", error);
+  }
+}
+
+async function loadOperations() {
+  try {
+    const response = await fetch(`${API_URL}/operations`);
+    const data = await response.json();
+
+    if (response.ok && data.operations) {
+      state.operations = data.operations;
+
+      if (state.currentPage === "receipts") {
+        renderOperations("Receipt");
+      }
+
+      if (state.currentPage === "deliveries") {
+        renderOperations("Delivery");
+      }
+
+      if (state.currentPage === "transfers") {
+        renderOperations("Internal");
+      }
+
+      if (state.currentPage === "adjustments") {
+        renderOperations("Adjustment");
+      }
+
+      if (state.currentPage === "ledger") {
+        renderLedger();
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load operations:", error);
+  }
+}
+
+async function loadStats() {
+  try {
+    const response = await fetch(`${API_URL}/stats`);
+    const data = await response.json();
+
+    if (response.ok) {
+      const totalProducts = document.getElementById("totalProducts");
+      const lowStock = document.getElementById("lowStock");
+      const outStock = document.getElementById("outStock");
+
+      if (totalProducts) {
+        totalProducts.textContent = data.total_products ?? state.products.length;
+      }
+
+      if (lowStock) {
+        lowStock.textContent = data.low_stock ?? 0;
+      }
+
+      if (outStock) {
+        outStock.textContent = data.out_of_stock ?? 0;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load stats:", error);
+    updateStats();
+  }
+}
+
 function renderPage(page) {
-  if (page === "dashboard") renderDashboard();
-  if (page === "products") renderProducts();
-  if (page === "receipts") renderOperations("Receipt");
-  if (page === "deliveries") renderOperations("Delivery");
-  if (page === "transfers") renderOperations("Internal");
-  if (page === "adjustments") renderOperations("Adjustment");
-  if (page === "ledger") renderLedger();
+  if (page === "dashboard") {
+    renderDashboard();
+    loadStats();
+  }
+
+  if (page === "products") {
+    renderProducts();
+  }
+
+  if (page === "receipts") {
+    renderOperations("Receipt");
+    loadOperations();
+  }
+
+  if (page === "deliveries") {
+    renderOperations("Delivery");
+    loadOperations();
+  }
+
+  if (page === "transfers") {
+    renderOperations("Internal");
+    loadOperations();
+  }
+
+  if (page === "adjustments") {
+    renderOperations("Adjustment");
+    loadOperations();
+  }
+
+  if (page === "ledger") {
+    renderLedger();
+    loadOperations();
+  }
 }
 
 function renderDashboard() {
@@ -114,7 +219,9 @@ function renderProducts() {
         </span>
       </td>
       <td>
-        <button class="table-action" onclick="editProduct('${product.sku}')">Edit</button>
+        <button class="table-action" onclick="editProduct('${product.sku}')">
+          Edit
+        </button>
       </td>
     </tr>
   `).join("");
@@ -122,13 +229,13 @@ function renderProducts() {
 
 function renderOperations(type) {
   const tableIds = {
-"Receipt": "receiptsTable",
-"Delivery": "deliveriesTable",
-"Transfer": "transfersTable",
-"Adjustment": "adjustmentsTable"
-};
+    Receipt: "receiptsTable",
+    Delivery: "deliveriesTable",
+    Internal: "transfersTable",
+    Adjustment: "adjustmentsTable"
+  };
 
-const table = document.getElementById(tableIds[type]);
+  const table = document.getElementById(tableIds[type]);
 
   if (!table) return;
 
@@ -204,7 +311,9 @@ function openModal(title, content) {
 function closeModal() {
   const modal = document.getElementById("modal");
 
-  if (modal) modal.classList.remove("show");
+  if (modal) {
+    modal.classList.remove("show");
+  }
 }
 
 function openProductModal() {
@@ -257,43 +366,83 @@ function openProductModal() {
   );
 }
 
-function createProduct(event) {
+async function createProduct(event) {
   event.preventDefault();
 
-  const name = document.getElementById("productName").value;
-  const sku = document.getElementById("productSku").value;
-  const category = document.getElementById("productCategory").value;
+  const name = document.getElementById("productName").value.trim();
+  const sku = document.getElementById("productSku").value.trim();
+  const category = document.getElementById("productCategory").value.trim();
   const unit = document.getElementById("productUnit").value;
   const stock = Number(document.getElementById("productStock").value);
-  const location = document.getElementById("productLocation").value || "Main Warehouse";
+  const location =
+    document.getElementById("productLocation").value.trim() ||
+    "Main Warehouse";
 
-  state.products.push({
+  const productData = {
     name,
     sku,
     category,
-    stock,
     unit,
-    location,
-    status: stock === 0 ? "Out of Stock" : stock < 20 ? "Low Stock" : "In Stock"
-  });
+    stock,
+    location
+  };
 
-  closeModal();
-  renderProducts();
-  updateStats();
+  try {
+    const response = await fetch(`${API_URL}/products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(productData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.error || "Failed to create product.");
+      return;
+    }
+
+    state.products.push(data.product);
+
+    closeModal();
+
+    await loadProducts();
+    await loadStats();
+
+    alert("Product created successfully!");
+  } catch (error) {
+    console.error("Create product error:", error);
+    alert("Backend connection failed. Make sure Flask is running on port 5000.");
+  }
 }
 
 function updateStats() {
   const total = state.products.length;
-  const low = state.products.filter(p => p.stock > 0 && p.stock < 20).length;
-  const out = state.products.filter(p => p.stock === 0).length;
+
+  const low = state.products.filter(
+    p => p.stock > 0 && p.stock < 20
+  ).length;
+
+  const out = state.products.filter(
+    p => p.stock === 0
+  ).length;
 
   const totalProducts = document.getElementById("totalProducts");
   const lowStock = document.getElementById("lowStock");
   const outStock = document.getElementById("outStock");
 
-  if (totalProducts) totalProducts.textContent = total;
-  if (lowStock) lowStock.textContent = low;
-  if (outStock) outStock.textContent = out;
+  if (totalProducts) {
+    totalProducts.textContent = total;
+  }
+
+  if (lowStock) {
+    lowStock.textContent = low;
+  }
+
+  if (outStock) {
+    outStock.textContent = out;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -317,4 +466,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderDashboard();
   updateStats();
+
+  loadProducts();
+  loadOperations();
+  loadStats();
 });
