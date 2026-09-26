@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-const API_URL = "http://127.0.0.1:5000/api";
-=======
 /**
  * StockSense — Inventory Management System Client
  * Seamlessly integrates with Flask SQLite REST backend with robust offline fallback.
  */
 
-const API_BASE = ""; // Relative to origin
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
+const API_BASE = "http://127.0.0.1:5000/api"; // Relative to origin
 
 const state = {
   currentUser: {
@@ -252,41 +248,6 @@ async function loadStats() {
 }
 
 function renderPage(page) {
-<<<<<<< HEAD
-  if (page === "dashboard") {
-    renderDashboard();
-    loadStats();
-  }
-
-  if (page === "products") {
-    renderProducts();
-  }
-
-  if (page === "receipts") {
-    renderOperations("Receipt");
-    loadOperations();
-  }
-
-  if (page === "deliveries") {
-    renderOperations("Delivery");
-    loadOperations();
-  }
-
-  if (page === "transfers") {
-    renderOperations("Internal");
-    loadOperations();
-  }
-
-  if (page === "adjustments") {
-    renderOperations("Adjustment");
-    loadOperations();
-  }
-
-  if (page === "ledger") {
-    renderLedger();
-    loadOperations();
-  }
-=======
   if (page === "dashboard") renderDashboard();
   else if (page === "products") renderProducts();
   else if (page === "receipts") renderOperations("Receipt");
@@ -326,7 +287,6 @@ function updateKPIs() {
   if (navReceipts) navReceipts.textContent = pendingRec;
   if (navDeliveries) navDeliveries.textContent = pendingDel;
   if (navTransfers) navTransfers.textContent = pendingTrf;
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
 }
 
 function renderDashboard() {
@@ -423,35 +383,6 @@ function renderDashboard() {
           </div>
           <time>${op.date || "Today"}</time>
         </div>
-<<<<<<< HEAD
-      </td>
-      <td>${product.category}</td>
-      <td>${product.stock} ${product.unit}</td>
-      <td>${product.location}</td>
-      <td>
-        <span class="status ${product.status.toLowerCase().replaceAll(" ", "-")}">
-          ${product.status}
-        </span>
-      </td>
-      <td>
-        <button class="table-action" onclick="editProduct('${product.sku}')">
-          Edit
-        </button>
-      </td>
-    </tr>
-  `).join("");
-}
-
-function renderOperations(type) {
-  const tableIds = {
-    Receipt: "receiptsTable",
-    Delivery: "deliveriesTable",
-    Internal: "transfersTable",
-    Adjustment: "adjustmentsTable"
-  };
-
-  const table = document.getElementById(tableIds[type]);
-=======
       `;
     }).join("");
   }
@@ -481,7 +412,6 @@ function renderOperations(type) {
         </div>
       `;
     }).join("");
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
 
     const existingAlerts = alertsPanel.querySelectorAll(".alert-item");
     existingAlerts.forEach(el => el.remove());
@@ -751,14 +681,7 @@ function openModal(title, content) {
 
 function closeModal() {
   const modal = document.getElementById("modal");
-<<<<<<< HEAD
-
-  if (modal) {
-    modal.classList.remove("show");
-  }
-=======
   if (modal) modal.classList.remove("show");
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
 }
 
 // Product Creation Modal
@@ -818,91 +741,6 @@ function openProductModal() {
   );
 }
 
-<<<<<<< HEAD
-async function createProduct(event) {
-  event.preventDefault();
-
-  const name = document.getElementById("productName").value.trim();
-  const sku = document.getElementById("productSku").value.trim();
-  const category = document.getElementById("productCategory").value.trim();
-  const unit = document.getElementById("productUnit").value;
-  const stock = Number(document.getElementById("productStock").value);
-  const location =
-    document.getElementById("productLocation").value.trim() ||
-    "Main Warehouse";
-
-  const productData = {
-    name,
-    sku,
-    category,
-    unit,
-    stock,
-    location
-  };
-
-  try {
-    const response = await fetch(`${API_URL}/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(productData)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      alert(data.error || "Failed to create product.");
-      return;
-    }
-
-    state.products.push(data.product);
-
-    closeModal();
-
-    await loadProducts();
-    await loadStats();
-
-    alert("Product created successfully!");
-  } catch (error) {
-    console.error("Create product error:", error);
-    alert("Backend connection failed. Make sure Flask is running on port 5000.");
-  }
-}
-
-function updateStats() {
-  const total = state.products.length;
-
-  const low = state.products.filter(
-    p => p.stock > 0 && p.stock < 20
-  ).length;
-
-  const out = state.products.filter(
-    p => p.stock === 0
-  ).length;
-
-  const totalProducts = document.getElementById("totalProducts");
-  const lowStock = document.getElementById("lowStock");
-  const outStock = document.getElementById("outStock");
-
-  if (totalProducts) {
-    totalProducts.textContent = total;
-  }
-
-  if (lowStock) {
-    lowStock.textContent = low;
-  }
-
-  if (outStock) {
-    outStock.textContent = out;
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", () => {
-      showPage(item.dataset.page);
-=======
 async function handleCreateProduct(e) {
   e.preventDefault();
   const payload = {
@@ -919,7 +757,6 @@ async function handleCreateProduct(e) {
     const res = await apiCall("/api/products", {
       method: "POST",
       body: JSON.stringify(payload)
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
     });
     showToast(res.message || "Product created successfully!");
     closeModal();
@@ -1475,15 +1312,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-<<<<<<< HEAD
-  renderDashboard();
-  updateStats();
-
-  loadProducts();
-  loadOperations();
-  loadStats();
-});
-=======
   // Product Search on Products Page
   const searchInput = document.getElementById("productSearch");
   if (searchInput) {
@@ -1547,4 +1375,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load initial data
   loadAllData();
 });
->>>>>>> 3786f55c45c60afe38438202198be494a71d5ca1
