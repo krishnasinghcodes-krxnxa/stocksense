@@ -101,16 +101,16 @@
                 </div>
             </div>
 
-            <button class="logout-btn" onclick="alert('Logout will be connected to authentication later.')">
+            <button class="logout-btn" onclick="openAuthModal()">
                 <span>↪</span>
-                Logout
+                Logout / Switch Account
             </button>
 
-            <div class="user-mini">
-                <div class="avatar">KS</div>
+            <div class="user-mini" onclick="openAuthModal()" style="cursor: pointer;">
+                <div class="avatar" id="sidebarAvatar">KS</div>
                 <div>
-                    <strong>Krishna Singh</strong>
-                    <span>Inventory Manager</span>
+                    <strong id="sidebarUserName">Krishna Singh</strong>
+                    <span id="sidebarUserRole">Inventory Manager</span>
                 </div>
                 <span class="online-dot"></span>
             </div>
@@ -147,11 +147,11 @@
                     <span></span>
                 </button>
 
-                <div class="top-user">
-                    <div class="avatar">KS</div>
+                <div class="top-user" onclick="openAuthModal()">
+                    <div class="avatar" id="topAvatar">KS</div>
                     <div>
-                        <strong>Krishna</strong>
-                        <small>Manager</small>
+                        <strong id="topUserName">Krishna</strong>
+                        <small id="topUserRole">Manager</small>
                     </div>
                     <span>⌄</span>
                 </div>
@@ -258,15 +258,15 @@
                         Smart Filters
                     </div>
 
-                    <select>
+                    <select id="filterDocType">
                         <option>All document types</option>
-                        <option>Receipts</option>
+                        <option>Receipt</option>
                         <option>Delivery</option>
                         <option>Internal</option>
-                        <option>Adjustments</option>
+                        <option>Adjustment</option>
                     </select>
 
-                    <select>
+                    <select id="filterStatus">
                         <option>All statuses</option>
                         <option>Draft</option>
                         <option>Waiting</option>
@@ -275,21 +275,22 @@
                         <option>Canceled</option>
                     </select>
 
-                    <select>
+                    <select id="filterWarehouse">
                         <option>All warehouses</option>
                         <option>Main Warehouse</option>
                         <option>Warehouse 1</option>
                         <option>Production Floor</option>
+                        <option>Rack B</option>
                     </select>
 
-                    <select>
+                    <select id="filterCategory">
                         <option>All categories</option>
                         <option>Raw Material</option>
                         <option>Furniture</option>
                         <option>Electrical</option>
                     </select>
 
-                    <button class="filter-reset">Reset</button>
+                    <button class="filter-reset" id="filterResetBtn">Reset</button>
 
                 </div>
 
@@ -497,21 +498,22 @@
                         <input id="productSearch" placeholder="Search by product name or SKU...">
                     </div>
 
-                    <select>
+                    <select id="productCategoryFilter">
                         <option>All Categories</option>
                         <option>Raw Material</option>
                         <option>Furniture</option>
                         <option>Electrical</option>
                     </select>
 
-                    <select>
+                    <select id="productLocationFilter">
                         <option>All Locations</option>
                         <option>Main Warehouse</option>
                         <option>Warehouse 1</option>
                         <option>Production Floor</option>
+                        <option>Rack B</option>
                     </select>
 
-                    <button class="ghost-btn">Export</button>
+                    <button class="ghost-btn" id="productExportBtn" onclick="exportProductsCSV()">Export</button>
 
                 </div>
 
@@ -637,14 +639,15 @@
                                 <tr>
                                     <th>REFERENCE</th>
                                     <th>SUPPLIER</th>
-                                    <th>PRODUCTS</th>
+                                    <th>PRODUCT</th>
                                     <th>QUANTITY</th>
                                     <th>STATUS</th>
                                     <th>DATE</th>
+                                    <th>ACTION</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="operationsTable"></tbody>
+                            <tbody id="receiptsTable"></tbody>
                         </table>
                     </div>
 
@@ -715,10 +718,11 @@
                                     <th>LOCATION</th>
                                     <th>STATUS</th>
                                     <th>DATE</th>
+                                    <th>ACTION</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="operationsTable"></tbody>
+                            <tbody id="deliveriesTable"></tbody>
                         </table>
                     </div>
 
@@ -783,10 +787,11 @@
                                     <th>ROUTE</th>
                                     <th>STATUS</th>
                                     <th>DATE</th>
+                                    <th>ACTION</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="operationsTable"></tbody>
+                            <tbody id="transfersTable"></tbody>
                         </table>
                     </div>
 
@@ -862,27 +867,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-                                <tr>
-                                    <td><strong>ADJ-0192</strong></td>
-                                    <td>Copper Wire</td>
-                                    <td>Rack B</td>
-                                    <td>21 kg</td>
-                                    <td>18 kg</td>
-                                    <td class="negative-text">-3 kg</td>
-                                    <td><span class="status done">Done</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>ADJ-0191</strong></td>
-                                    <td>Office Chairs</td>
-                                    <td>Warehouse 1</td>
-                                    <td>90</td>
-                                    <td>86</td>
-                                    <td class="negative-text">-4</td>
-                                    <td><span class="status done">Done</span></td>
-                                </tr>
-                            </tbody>
+                            <tbody id="adjustmentsTable"></tbody>
                         </table>
                     </div>
 
@@ -1178,195 +1163,8 @@
 
 </div>
 
-
-<script>
-
-function receiptForm() {
-    return `
-        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Receipt created successfully!')">
-
-            <div class="form-grid">
-
-                <div>
-                    <label>Supplier</label>
-                    <input required placeholder="Supplier name">
-                </div>
-
-                <div>
-                    <label>Product</label>
-                    <select>
-                        <option>Steel Rods</option>
-                        <option>Copper Wire</option>
-                        <option>Steel Plates</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Quantity Received</label>
-                    <input type="number" min="1" required placeholder="50">
-                </div>
-
-                <div>
-                    <label>Destination</label>
-                    <select>
-                        <option>Main Warehouse</option>
-                        <option>Warehouse 1</option>
-                        <option>Production Floor</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <button class="primary-btn full-btn" type="submit">
-                Create Receipt
-            </button>
-
-        </form>
-    `;
-}
-
-
-function deliveryForm() {
-    return `
-        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Delivery order created successfully!')">
-
-            <div class="form-grid">
-
-                <div>
-                    <label>Customer / Reference</label>
-                    <input required placeholder="Customer name">
-                </div>
-
-                <div>
-                    <label>Product</label>
-                    <select>
-                        <option>Office Chairs</option>
-                        <option>Steel Rods</option>
-                        <option>Copper Wire</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Quantity</label>
-                    <input type="number" min="1" required placeholder="10">
-                </div>
-
-                <div>
-                    <label>Source Location</label>
-                    <select>
-                        <option>Warehouse 1</option>
-                        <option>Main Warehouse</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <button class="primary-btn full-btn" type="submit">
-                Create Delivery
-            </button>
-
-        </form>
-    `;
-}
-
-
-function transferForm() {
-    return `
-        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Transfer created successfully!')">
-
-            <div class="form-grid">
-
-                <div>
-                    <label>Product</label>
-                    <select>
-                        <option>Steel Rods</option>
-                        <option>Copper Wire</option>
-                        <option>Steel Plates</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Quantity</label>
-                    <input type="number" min="1" required placeholder="120">
-                </div>
-
-                <div>
-                    <label>From Location</label>
-                    <select>
-                        <option>Main Warehouse</option>
-                        <option>Warehouse 1</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>To Location</label>
-                    <select>
-                        <option>Production Floor</option>
-                        <option>Rack B</option>
-                        <option>Warehouse 2</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <button class="primary-btn full-btn" type="submit">
-                Schedule Transfer
-            </button>
-
-        </form>
-    `;
-}
-
-
-function adjustmentForm() {
-    return `
-        <form class="modal-form" onsubmit="event.preventDefault(); closeModal(); alert('Stock adjustment recorded successfully!')">
-
-            <div class="form-grid">
-
-                <div>
-                    <label>Product</label>
-                    <select>
-                        <option>Copper Wire</option>
-                        <option>Steel Rods</option>
-                        <option>Office Chairs</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Location</label>
-                    <select>
-                        <option>Rack B</option>
-                        <option>Main Warehouse</option>
-                        <option>Warehouse 1</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label>Recorded Quantity</label>
-                    <input value="21" type="number">
-                </div>
-
-                <div>
-                    <label>Physical Count</label>
-                    <input value="18" type="number">
-                </div>
-
-            </div>
-
-            <div class="adjustment-note">
-                The system will calculate the difference and update stock after validation.
-            </div>
-
-            <button class="primary-btn full-btn" type="submit">
-                Validate Adjustment
-            </button>
-
-        </form>
-    `;
-}
-
-</script>
+<!-- TOAST NOTIFICATIONS -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script src="script.js"></script>
 
